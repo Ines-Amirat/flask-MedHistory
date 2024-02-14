@@ -20,10 +20,6 @@ def api_specialties_get():
     response = supabase.table('specialties').select("*").execute()
     return json.dumps(response.data)
 
-    @app.route('/specialties.get')
-def api_specialties_get():
-    response = supabase.table('specialties').select("*").execute()
-    return json.dumps(response.data)
 
 
 
