@@ -15,10 +15,17 @@ def home():
     return 'Hello, World!'
 
 
+@app.route('/records_type.get')
+def api_records_type_get():
+    response = supabase.table('records_type').select("*").execute()
+    return json.dumps(response.data)
+
+
 @app.route('/specialties.get')
 def api_specialties_get():
     response = supabase.table('specialties').select("*").execute()
     return json.dumps(response.data)
+
 
 
 @app.route('/countries.get')
