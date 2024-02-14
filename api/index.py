@@ -21,6 +21,12 @@ def api_specialties_get():
     return json.dumps(response.data)
 
 
+@app.route('/countries.get')
+def api_countries_get():
+    response = supabase.table('countries').select("*").execute()
+    return json.dumps(response.data)
+
+
 
 
 @app.route('/about')
