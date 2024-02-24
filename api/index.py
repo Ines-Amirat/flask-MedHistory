@@ -18,6 +18,7 @@ def home():
 @app.route('/records_type.get')
 def api_records_type_get():
     response = supabase.table('records_type').select("*").execute()
+    
     return json.dumps(response.data)
 
 
@@ -32,6 +33,13 @@ def api_specialties_get():
 def api_countries_get():
     response = supabase.table('countries').select("*").execute()
     return json.dumps(response.data)
+
+
+@app.route('/Relation.get')
+def api_Relation_get():
+    response = supabase.table('Relation').select("*").execute()
+    return json.dumps(response.data)
+
 
 
 
