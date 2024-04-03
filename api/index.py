@@ -43,6 +43,35 @@ def api_Relation_get():
     return json.dumps(response.data)
 
 
+@app.route('/about')
+def about():
+    return 'About'
 
 
+@app.route('/upload_images', methods=['POST'])
+def upload_images():
+    # Vérifiez si la partie 'image' est présente dans la requête
+    if 'image' not in request.files:
+        return 'No image part', 400
+    file = request.files['image']
+    
+    # Si l'utilisateur n'a pas sélectionné de fichier, le navigateur
+    # envoie une partie sans nom de fichier
+    if file.filename == '':
+        return 'No selected image', 400
+    if file:
+        # Sécurisez le nom du fichier pour éviter les failles de sécurité
+        filename = secure_filename(file.filename)
+        # Sauvegardez le fichier dans le dossier de destination
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+        # TODO: Ici, vous pourriez également uploader le fichier sur Supabase ou effectuer d'autres traitements
+        
+        return 'Image uploaded successfully', 200
+    else:
+        return 'Failed to upload image', 400
+    
 
+    
+
+ 
