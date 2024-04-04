@@ -6,8 +6,8 @@ import os
 
 app = Flask(__name__)
 
-url="https://hssqpmvmxjemxpnxlten.supabase.co"
-key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhzc3FwbXZteGplbXhwbnhsdGVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDczODYzNDksImV4cCI6MjAyMjk2MjM0OX0.MXW1cXjLxD-lSRSRu4xV2mz7m1hJYvbwLoEtpg0c3nM"
+url="https://ghwerggdepsautiaodrd.supabase.co"
+key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdod2VyZ2dkZXBzYXV0aWFvZHJkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwNzA3NzgyMSwiZXhwIjoyMDIyNjUzODIxfQ.oy8j8ENqbx1gge8wohDrXStQqD7LH6IDj421QZgLTa0"
 
 supabase: Client = create_client(url, key)
 
@@ -22,6 +22,7 @@ def api_records_type_get():
     response = supabase.table('records_type').select("*").execute()
     
     return json.dumps(response.data)
+
 
 
 @app.route('/specialties.get')
@@ -48,29 +49,67 @@ def about():
     return 'About'
 
 
+
+
 @app.route('/upload_images', methods=['POST'])
 def upload_images():
-    # Vérifiez si la partie 'image' est présente dans la requête
     if 'image' not in request.files:
         return 'No image part', 400
     file = request.files['image']
     
-    # Si l'utilisateur n'a pas sélectionné de fichier, le navigateur
-    # envoie une partie sans nom de fichier
+
     if file.filename == '':
         return 'No selected image', 400
+
+
     if file:
-        # Sécurisez le nom du fichier pour éviter les failles de sécurité
         filename = secure_filename(file.filename)
-        # Sauvegardez le fichier dans le dossier de destination
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file_bytes = file.read()  # Lire le fichier en bytes
+
+        # Remplacez 'your-bucket-name' avec le nom de votre bucket Supabase
+        bucket_name = 'profiles'
         
-        # TODO: Ici, vous pourriez également uploader le fichier sur Supabase ou effectuer d'autres traitements
-        
-        return 'Image uploaded successfully', 200
-    else:
-        return 'Failed to upload image', 400
+
+        print("Avant l'upload")
+        try:
+            # Uploadez le fichier sur Supabase
+            result = supabase.storage.from_(bucket_name).upload('uploads/' + filename, file_bytes)
+            print("Après l'upload :", result)
+
+           
+
+
+            if 'Key' in result:
+                # Vous pouvez obtenir l'URL du fichier si nécessaire
+                file_url = supabase.storage.from_(bucket_name).get_public_url('uploads/' + filename).data.get('publicURL')
+                print("URL du fichier :", file_url)
+                return {'url': file_url}, 200
+            else:
+                print("Échec de l'upload, pas de clé dans le résultat")
+                return {'error': 'Failed to upload to Supabase'}, 500
+        except Exception as e:
+            print("Exception lors de l'upload :", e)
+            return {'error': str(e)}, 500
+
+    return 'Failed to upload image', 400
+
+
+
+
+
+
     
+
+
+       
+      
+
+      
+
+   
+
+
+
 
     
 
