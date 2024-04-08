@@ -20,12 +20,8 @@ import requests
 from bs4 import BeautifulSoup
 from werkzeug.utils import secure_filename
 import base64
-from flask_mail import Mail, Message
 from supabase import create_client, Client
 import os
-
-
-
 
 
 app = Flask(__name__)
