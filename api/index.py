@@ -20,8 +20,12 @@ import requests
 from bs4 import BeautifulSoup
 from werkzeug.utils import secure_filename
 import base64
+from flask_mail import Mail, Message
 from supabase import create_client, Client
 import os
+
+
+
 
 
 app = Flask(__name__)
@@ -35,8 +39,23 @@ timeout = httpx.Timeout(10.0, read=60.0)
 
 client = httpx.Client(timeout=timeout)
 
+app.config['MAIL_SERVER'] = 'smtp.mailgun.org'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'noreply@mail.medhistory.app' #'postmaster@mail.medhistory.app'  
+app.config['MAIL_PASSWORD'] = '93412fe0531ec65a5b9f888a53e27536-4c205c86-e2f0999c' #'943a611c1bfe87002a5fe233f2467432-4c205c86-6b7b2ef2' 
+
+#mailtrap
+#app.config['MAIL_SERVER']='bulk.smtp.mailtrap.io'
+#app.config['MAIL_PORT'] = 587
+#app.config['MAIL_USERNAME'] = 'api'
+#app.config['MAIL_PASSWORD'] = '40bfeef8e572a169c418d91785c244e2'
+#app.config['MAIL_USE_TLS'] = True
+#app.config['MAIL_USE_SSL'] = False
 
 
+mail = Mail(app)
 
 @app.route('/')
 def home():
@@ -274,6 +293,7 @@ def sendEmail():
 
     return jsonify(message='Email sent successfully'), 200
     
+    
 
 @app.route('/scrape')
 def scrape():
@@ -289,16 +309,9 @@ def scrape():
     return json.dumps(result)
 
 
-
-
-
-
-
-
 @app.route('/about')
 def about():
     return 'About'
-
 
 
 @app.route('/fetch_record_and_photos', methods=['POST'])
@@ -331,16 +344,6 @@ def fetch_record_and_photos():
     except Exception as e:
         print(f"An error occurred: {e}")
         return jsonify({'error': 'Failed to fetch data from Supabase'}), 500
-
-
-
-
-
-
-
-
-
-
 
 
 
