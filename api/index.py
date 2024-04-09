@@ -24,11 +24,15 @@ from flask_mail import Mail, Message
 from supabase import create_client, Client
 import os
 
+from flask_cors import CORS
+                                                                                                                                                                                                                                                                            
 
 
 
 
 app = Flask(__name__)
+
+CORS(app)
 
 #allows to start integrating Supabase features into Flask application.
 SUPABASE_URL="https://ghwerggdepsautiaodrd.supabase.co"
@@ -247,7 +251,6 @@ def upload_images():
             print(response)
             if response.status_code in range(200, 300):
                 print("Upload successful")
-                # Obtain the file URL if necessary
                 file_url = supabase.storage.from_(bucket_name).get_public_url(upload_path)
                 #file_url = f"{SUPABASE_URL}/storage/v1/object/public/{bucket_name}/{upload_path}"
                 print(file_url)
@@ -293,7 +296,7 @@ def sendEmail():
 
     return jsonify(message='Email sent successfully'), 200
     
-    
+
 
 @app.route('/scrape')
 def scrape():
@@ -314,30 +317,29 @@ def about():
     return 'About'
 
 
-@app.route('/fetch_record_and_photos', methods=['POST'])
+@app.route('/fetch_record_and_photos', methods=['GET'])
 def fetch_record_and_photos():
     # Extraire les données JSON de la requête
-    data = request.get_json()
+    data = request.args
+    
     user_id = data.get('user_id')
     record_id = data.get('record_id')
+    print(record_id)
+    print(user_id)
     
     if not user_id or not record_id:
         return jsonify({'error': 'Missing user_id or record_id'}), 400
     
     try:
-        # Récupérer les informations du dossier médical
+       
         record_info_response = supabase.table('records').select('*').eq('id', record_id).execute()
         record_info = record_info_response.data
+        print( record_info)
+       # photos_response = supabase.storage.from_('image').list(f'{user_id}/{record_id}/uploads')
         
-        # Récupérer les photos associées au dossier médical
-        # Assurez-vous de remplacer 'bucket_name' par le nom de votre bucket
-        photos_response = supabase.storage.from_('image').list(f'{user_id}/{record_id}')
-        photos_info = photos_response.data
-        
-        # Construire la réponse
         response = {
             'record_info': record_info,
-            'photos_info': photos_info
+           # 'photos_info': photos_response
         }
         
         return jsonify(response), 200
