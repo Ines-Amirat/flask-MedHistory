@@ -3,3 +3,4 @@ supabase
 Pillow
 beautifulsoup4
 flask_mail
+flask_cors
