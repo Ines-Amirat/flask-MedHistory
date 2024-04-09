@@ -1,28 +1,14 @@
-
-import base64
-import datetime
 import io
-import logging
 from PIL import Image
 from flask import Flask,request,jsonify
 import json
 import httpx
-from pydantic_core import Url
 from supabase import create_client, Client
-import requests
-from bs4 import BeautifulSoup
 from werkzeug.utils import secure_filename
-import base64
 from flask_mail import Mail, Message
 from supabase import create_client, Client
-import os
-
 from flask_cors import CORS
                                                                                                                                                                                                                                                                             
-
-
-
-
 app = Flask(__name__)
 
 CORS(app)
