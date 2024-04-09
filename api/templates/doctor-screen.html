@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Faster+One&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Courgette&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+
+        .M {
+            color: #164863;
+            font-family: 'Faster One', cursive;
+            font-size: 63px;
+        }
+
+        .edHistory {
+            color: #164863;
+            font-family: 'Courgette', cursive;
+            font-size: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+
+
+        function getURLParameter(name) {
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(window.location.href);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+
+        function sendRecordToBackend(recordId, userId) {
+
+            console.log(recordId);
+
+            const endpoint = `https://medhistory.app/fetch_record_and_photos?record_id=${recordId}&user_id=${userId}`;
+
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+
+                    if (data.record_info && data.record_info.length > 0) {
+                        const record = data.record_info[0]; // Prendre le premier élément du tableau record_info
+                        // Met à jour l'interface utilisateur avec ces données
+
+                        document.getElementById('recordTitle').value = record.title || '';
+
+                        document.getElementById('recordtype').value = record.recordtype || '';
+                        document.getElementById('doctor').value = record.name || '';
+                        document.getElementById('sp').value = record.sp || '';
+                        document.getElementById('recordDate').value = record.date || '';
+                        document.getElementById('des').value = record.des || '';
+                    }
+
+                    /*
+                document.getElementById('recordTitle').value = data.title;
+                document.getElementById('recordtype').value = data.recordtype;
+                document.getElementById('doctor').value = data.name;
+                document.getElementById('sp').value = data.sp;
+                document.getElementById('recordDate').value = data.date;
+                document.getElementById('des').value = data.des;
+                */
+                    /*
+                    document.getElementById('recordTitle').value = record.title || '';
+                    document.getElementById('recordtype').value = record.recordtype || '';
+                    document.getElementById('doctor').value = record.name || '';
+                    document.getElementById('sp').value = record.sp || '';
+                    document.getElementById('recordDate').value = record.date || '';
+                    document.getElementById('des').value = record.des || '';
+                    // Et ainsi de suite, pour les autres champs
+                    */
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var recordId = "{{record_id}}";
+            var userId = "{{user_id}}";
+
+            // Call the function to send the data to the backend
+            if (recordId && userId) {
+                sendRecordToBackend(recordId, userId);
+            }
+        });
+    </script>
+
+    <header style="margin-left: 2%;">
+        <span class="M">M</span><span class="edHistory">edHistory</span>
+    </header>
+    <br>
+    <section class="vh-100">
+        <div class="container h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-xl-9">
+                    <h1 style="color: #164863;padding-left: 30%; font-family: 'Noto Serif', 'serif'; ">Information
+                        Details</h1>
+                    <div class="card" style="border-radius: 15px; border-color: #164863; border-width: 2px;">
+                        <div class="card-body">
+                            <div class="row align-items-center pt-4 pb-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Record title</h6>
+                                </div>
+                                <div class="col-md-9 pe-5">
+                                    <input type="text" id="recordTitle" class="form-control form-control-lg" />
+                                </div>
+                            </div>
+                            <hr class="mx-n3">
+                            <div class="row align-items-center pt-4 pb-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Record type</h6>
+                                </div>
+                                <div class="col-md-9 pe-5">
+                                    <input type="text" id="recordtype" class="form-control form-control-lg" />
+                                </div>
+                            </div>
+                            <hr class="mx-n3">
+                            <div class="row align-items-center pt-4 pb-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Doctor name</h6>
+                                </div>
+                                <div class="col-md-9 pe-5">
+                                    <input type="text" id="doctor" class="form-control form-control-lg" />
+                                </div>
+                            </div>
+                            <hr class="mx-n3">
+                            <div class="row align-items-center pt-4 pb-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Specialty </h6>
+                                </div>
+                                <div class="col-md-9 pe-5">
+                                    <input type="text" id="sp" class="form-control form-control-lg" />
+                                </div>
+                            </div>
+                            <hr class="mx-n3">
+                            <div class="row align-items-center pt-4 pb-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Date </h6>
+                                </div>
+                                <div class="col-md-9 pe-5">
+                                    <input type="date" id="recordDate" class="form-control form-control-lg" />
+                                </div>
+                            </div>
+                            <hr class="mx-n3">
+                            <div class="row align-items-center py-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Description</h6>
+                                </div>
+                                <div class="col-md-9 pe-5">
+                                    <textarea class="form-control" id="des" rows="2" placeholder=""></textarea>
+                                </div>
+                            </div>
+                            <hr class="mx-n3">
+                            <div class="row align-items-center py-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Documents</h6>
+                                </div>
+                            </div>
+                            <div class="row align-items-center py-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Upload Documents</h6>
+                                </div>
+                                <div class="col-md-9 pe-5">
+                                    <input type="file" id="imageInput" class="form-control" multiple accept="image/*">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="img-container" id="imageContainer"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <br><br>
+
+</body>
+
+</html>

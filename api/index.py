@@ -1,6 +1,6 @@
 import io
 from PIL import Image
-from flask import Flask,request,jsonify
+from flask import Flask, render_template,request,jsonify
 import json
 import httpx
 from supabase import create_client, Client
@@ -230,7 +230,12 @@ def sendEmail():
 
     return jsonify(message='Email sent successfully'), 200
     
-
+@app.route('/patient-record/<record_id>/<user_id>')
+def patient_record(record_id,user_id):
+    #record_id = request.args.get("")
+    print(record_id)
+    print(user_id)
+    return render_template("doctor-screen.html",record_id=record_id,user_id=user_id)
 
 @app.route('/about')
 def about():
