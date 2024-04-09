@@ -8,13 +8,6 @@ from flask import Flask,request,jsonify
 import json
 import httpx
 from pydantic_core import Url
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.common.exceptions import NoSuchElementException
 from supabase import create_client, Client
 import requests
 from bs4 import BeautifulSoup
@@ -129,51 +122,6 @@ def api_doctor_get():
 
     return json.dumps(response.data)
 
-def scrape_doctors(doctor_name, specialty, region):
-    # Set up ChromeDriver
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    driver = webdriver.Chrome(service=Service(executable_path=ChromeDriverManager().install()),options=chrome_options)
-    #service = Service(executable_path=ChromeDriverManager().install())
-    #driver = webdriver.Chrome(service=service)
-
-    # Build the URL using the arguments
-    url = 'https://www.med.tn/docteur-algerie'
-    if specialty:
-        url += f'/{specialty}'
-    if region:
-        url += f'/{region}'
-    if doctor_name:
-        url += f'/recherche/{doctor_name}'
-    
-    # Navigate to the website
-    driver.get(url)
-
-    # Wait for the elements to load
-    wait = WebDriverWait(driver, 30)
-    doctor_elements = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "card-doctor-block")))
-
-    # Store the data in a list
-    doctors_data = []
-
-    # Loop through each doctor element and extract the information
-    for doctor_element in doctor_elements:
-        try:
-            name = doctor_element.find_element(By.CLASS_NAME, "list__label--name").text
-            specialty = doctor_element.find_element(By.CLASS_NAME, "list__label--spee").text
-            address = doctor_element.find_element(By.CLASS_NAME, "list__label--adr").text
-            doctors_data.append({"Name": name, "Specialty": specialty, "Address": address})
-        except NoSuchElementException:
-            print("Some elements could not be found. Skipping this entry.")
-            continue
-        
-    # Clean up
-    driver.quit()
-
-    # Convert data to JSON and return
-    return doctors_data
 
 @app.route('/recordinfo.set', methods=['POST'])
 def api_endpoint_post_add_info_record():
@@ -296,20 +244,6 @@ def sendEmail():
 
     return jsonify(message='Email sent successfully'), 200
     
-
-
-@app.route('/scrape')
-def scrape():
-    # Get parameters from URL query string
-    doctor_name = request.args.get('name', default="", type=str)
-    specialty = request.args.get('sp', default="", type=str)
-    region = request.args.get('rg', default="", type=str)
-
-    # Call the scrape function
-    result = scrape_doctors(doctor_name, specialty, region)
-
-    # Return the result as a JSON response
-    return json.dumps(result)
 
 
 @app.route('/about')
